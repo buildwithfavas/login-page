@@ -1,45 +1,20 @@
 const express = require('express');
+const { checkAuth, checkGuest, validateLoginInput } = require('../middleware/middlewares');
 const user = express.Router();
 
 const userName = "admin";
-const password = "admin@123";
-
-// --- Middleware ---
-
-function checkAuth(req, res, next) {
-    if(req.session.user) {
-        next();
-    } else {
-        res.redirect('/');
-    }
-}
-
-function checkGuest(req, res, next) {
-    if(req.session.user){
-        res.redirect('/home');
-    }else{
-        next();
-    }
-}
-
-function validateLoginInput(req, res ,next){
-    const {username, password} = req.body;
-    if(!username || !password){
-        return res.render('login',{msg:"Username and Password are required"});
-    }
-    next();
-}
-
-// --- Routes ---
+const password = "Admin@123";
 
 user.get('/', checkGuest, (req, res) => {
     const msg = req.session.msg || null;
     req.session.msg = null;
-    res.render('login', {msg});
+    res.render('login', { msg });
 });
 
 user.post('/verify', validateLoginInput, (req, res) => {
-    const {username, password: pwd} = req.body;
+    const { username, password: pwd } = req.body;
+    // console.log("USERNAME:", username);
+    // console.log("PASSWORD:", pwd);
 
     if (username === userName && pwd === password) {
 
@@ -53,7 +28,7 @@ user.post('/verify', validateLoginInput, (req, res) => {
 });
 
 user.get('/home', checkAuth, (req, res) => {
-        res.render('home');
+    res.render('home');
 });
 
 user.get('/logout', (req, res) => {

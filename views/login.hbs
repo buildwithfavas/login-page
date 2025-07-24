@@ -8,19 +8,19 @@
   <div class="login">
     <h2>Login</h2>
     {{#if msg}}
-      <div>
-        <h4 class="alert text-danger text-center" role="alert" >
-          {{msg}}
-        </h4>
-      </div>
+    <div>
+      <h4 id="error-msg" class="alert text-danger text-center" role="alert">
+        {{msg}}
+      </h4>
+    </div>
     {{/if}}
-    <form action="/verify" method="post">
+    <form action="/verify" method="post" onsubmit="return validateForm()">
       <div class="inputBx">
-        <input type="text" name="username" placeholder="Username" />
+        <input type="text" id="username" name="username" placeholder="Username" />
       </div>
       <br />
       <div class="inputBx">
-        <input type="password" name="password" placeholder="Password" />
+        <input type="password" id="password" name="password" placeholder="Password" />
       </div>
       <br />
       <div class="inputBx">
@@ -34,3 +34,5 @@
   </div>
 </div>
 <!--ring div ends here-->
+
+<script src="/js/loginValidation.js"></script>

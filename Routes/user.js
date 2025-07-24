@@ -4,52 +4,61 @@ const user = express.Router();
 const userName = "admin";
 const password = "admin@123";
 
-user.get('/', (req, res) => {
-    if (req.session.user) {
-        res.render('home');
+// --- Middleware ---
+
+function checkAuth(req, res, next) {
+    if(req.session.user) {
+        next();
     } else {
-        if (req.session.passwordwrong) {
-            res.render('login', { msg: "Invalid Credentials" });
-            req.session.passwordwrong = false;
-        } else {
-            res.render('login');
-        }
+        res.redirect('/');
     }
+}
+
+function checkGuest(req, res, next) {
+    if(req.session.user){
+        res.redirect('/home');
+    }else{
+        next();
+    }
+}
+
+function validateLoginInput(req, res ,next){
+    const {username, password} = req.body;
+    if(!username || !password){
+        return res.render('login',{msg:"Username and Password are required"});
+    }
+    next();
+}
+
+// --- Routes ---
+
+user.get('/', checkGuest, (req, res) => {
+    const msg = req.session.msg || null;
+    req.session.msg = null;
+    res.render('login', {msg});
 });
 
-user.post('/verify', (req, res) => {
-    //console.log(req.body);
-    if (req.body.username === userName && req.body.password === password) {
+user.post('/verify', validateLoginInput, (req, res) => {
+    const {username, password: pwd} = req.body;
 
-        req.session.user = req.body.username;
+    if (username === userName && pwd === password) {
+
+        req.session.user = username;
         res.redirect('/home');
     } else {
 
-        req.session.passwordwrong = true;
+        req.session.msg = "Invalid Credentials";
         res.redirect('/');
-        //res.render("login", {msg: "Invalid Credentials"});
     }
 });
 
-user.get('/home', (req, res) => {
-
-    if (req.session.user) {
+user.get('/home', checkAuth, (req, res) => {
         res.render('home');
-    } else {
-        if (req.session.passwordwrong) {
-            req.session.passwordwrong = false;
-            res.render('login', { msg: "Invalid Credentials" });
-        } else {
-
-            res.render('login')
-        }
-    }
 });
 
 user.get('/logout', (req, res) => {
     req.session.destroy();
-    //res.send("Logout done success");
-    res.render('login', { msg: "Logged out" });
+    res.render('login', { msg: "Logged out successfully" });
 
 });
 

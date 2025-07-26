@@ -17,4 +17,10 @@ app.use(session({
 
 app.use(nocache());
 app.use('/', userRoute);
+
+app.use((err, req, res, next) => {
+    console.error("Internal Error: ", err.stack);
+    res.status(500).send("Something went wrong on the server.");
+});
+
 app.listen(3003, () => console.log('Server running on port 3003'));

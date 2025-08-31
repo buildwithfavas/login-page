@@ -1,3 +1,4 @@
+//check user loggedin
 function checkAuth(req, res, next) {
     if (req.session.user) {
         next();
@@ -6,6 +7,7 @@ function checkAuth(req, res, next) {
     }
 }
 
+//check for guest
 function checkGuest(req, res, next) {
     if (req.session.user) {
         res.redirect('/home');
@@ -14,6 +16,7 @@ function checkGuest(req, res, next) {
     }
 }
 
+//check username and password is not empty
 function validateLoginInput(req, res, next) {
     const { username, password } = req.body;
 
